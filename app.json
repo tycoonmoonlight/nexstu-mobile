@@ -1,0 +1,28 @@
+{
+  "expo": {
+    "name": "Nexstu",
+    "slug": "nexstu",
+    "version": "1.0.0",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "dark",
+    "splash": {
+      "image": "./assets/splash.png",
+      "backgroundColor": "#000000"
+    },
+    "android": {
+      "package": "com.nexstu.mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "display": "standalone",
+      "themeColor": "#000000",
+      "backgroundColor": "#000000",
+      "startUrl": "/",
+      "meta": {
+        "mobile-web-app-capable": "yes",
+        "apple-mobile-web-app-capable": "yes",
+        "apple-mobile-web-app-status-bar-style": "black-translucent"
+      }
+    }
+  }
+}
