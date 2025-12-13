@@ -2,35 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, ActivityIndicator, Platform } from 'react-native';
 import AppNavigator from './src/navigation/AppNavigator';
-import { getUser, saveUser, removeUser } from './src/utils/auth';
 
 export default function App() {
-  // TRICK: We start with a Fake User so the app thinks we are logged in!
+  // FORCE LOGIN: We provide a fake user immediately
   const [user, setUser] = useState({ 
-    name: "NexStu Developer", 
-    email: "dev@nexstu.com",
-    token: "simulation-token"
+    name: "NexStu Dev", 
+    email: "dev@nexstu.com" 
   });
+  
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (Platform.OS === 'web') {
-      const meta = document.createElement('meta');
-      meta.name = 'mobile-web-app-capable';
-      meta.content = 'yes';
-      document.head.appendChild(meta);
-    }
-    // We skipped checkLogin() to force entry
-  }, []);
-
-  const handleLogin = async (userData) => {
-    await saveUser(userData);
-    setUser(userData);
-  };
-
+  // When you click Logout, we just set the fake user again
+  // preventing you from ever seeing the broken login screen
   const handleLogout = async () => {
-    await removeUser();
-    setUser(null);
+    alert("Logout is disabled during testing.");
   };
 
   if (loading) {
@@ -46,7 +31,7 @@ export default function App() {
       <StatusBar style="light" />
       <AppNavigator 
         user={user} 
-        setUser={handleLogin} 
+        setUser={setUser} 
         logout={handleLogout} 
       />
     </>
