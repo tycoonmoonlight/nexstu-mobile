@@ -16,13 +16,15 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          # cache removed to fix error
 
       - name: 📦 Install EAS CLI
         run: npm install -g eas-cli
 
       - name: 📦 Install Dependencies
         run: npm install
+
+      - name: 🔧 Auto-Fix Dependencies
+        run: npx expo install --fix
 
       - name: 🚀 Build APK
         env:
