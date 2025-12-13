@@ -30,6 +30,11 @@
     "plugins": [
       "expo-image-picker"
     ],
+    "extra": {
+      "eas": {
+        "projectId": "0d2734cc-ae1e-47e2-894a-b0006febb2a0"
+      }
+    },
     "newArchEnabled": false
   }
 }

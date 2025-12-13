@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          # cache line is REMOVED to fix the lockfile error
+          # cache removed to fix error
 
       - name: 📦 Install EAS CLI
         run: npm install -g eas-cli
