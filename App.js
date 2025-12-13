@@ -5,28 +5,23 @@ import AppNavigator from './src/navigation/AppNavigator';
 import { getUser, saveUser, removeUser } from './src/utils/auth';
 
 export default function App() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // TRICK: We start with a Fake User so the app thinks we are logged in!
+  const [user, setUser] = useState({ 
+    name: "NexStu Developer", 
+    email: "dev@nexstu.com",
+    token: "simulation-token"
+  });
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    // 1. Force Web to act like an App
     if (Platform.OS === 'web') {
       const meta = document.createElement('meta');
       meta.name = 'mobile-web-app-capable';
       meta.content = 'yes';
       document.head.appendChild(meta);
     }
-    
-    checkLogin();
+    // We skipped checkLogin() to force entry
   }, []);
-
-  const checkLogin = async () => {
-    const savedUser = await getUser();
-    if (savedUser) {
-      setUser(savedUser);
-    }
-    setLoading(false);
-  };
 
   const handleLogin = async (userData) => {
     await saveUser(userData);
