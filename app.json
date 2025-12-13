@@ -1,28 +1,35 @@
 {
   "expo": {
-    "name": "Nexstu",
+    "name": "NexStu",
     "slug": "nexstu",
     "version": "1.0.0",
+    "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
-      "backgroundColor": "#000000"
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
     },
     "android": {
-      "package": "com.nexstu.mobile"
+      "package": "com.nexstu.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      }
     },
     "web": {
-      "favicon": "./assets/favicon.png",
-      "display": "standalone",
-      "themeColor": "#000000",
-      "backgroundColor": "#000000",
-      "startUrl": "/",
-      "meta": {
-        "mobile-web-app-capable": "yes",
-        "apple-mobile-web-app-capable": "yes",
-        "apple-mobile-web-app-status-bar-style": "black-translucent"
-      }
-    }
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-image-picker"
+    ],
+    "newArchEnabled": true
   }
 }
