@@ -21,7 +21,9 @@ jobs:
         run: npm install -g eas-cli
 
       - name: 📦 Install Dependencies
-        run: npm install
+        run: |
+          npm install
+          npx expo install expo-font
 
       - name: 🔧 Auto-Fix Dependencies
         run: npx expo install --fix
