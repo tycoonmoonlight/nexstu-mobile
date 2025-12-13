@@ -16,7 +16,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18.x
-          cache: npm
+          # cache removed because we don't have a lockfile yet
 
       - name: 📦 Install EAS CLI
         run: npm install -g eas-cli
