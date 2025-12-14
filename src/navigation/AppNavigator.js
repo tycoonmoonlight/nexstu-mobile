@@ -4,8 +4,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer, DarkTheme, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
-
-// Import Context Only
 import { ThemeContext } from '../context/ThemeContext';
 
 // Import Screens
@@ -32,7 +30,6 @@ import MarketScreen from '../screens/MarketScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// --- DEFINE COLORS LOCALLY (SAFETY FIX) ---
 const DarkColors = { bg: '#000000', card: '#121212', text: '#ffffff', textSec: '#a1a1aa', border: '#27272a', accent: '#FACC15', icon: '#fff' };
 const LightColors = { bg: '#ffffff', card: '#f4f4f5', text: '#000000', textSec: '#52525b', border: '#e4e4e7', accent: '#ca8a04', icon: '#000' };
 
@@ -44,27 +41,22 @@ function HomeTabs({ user, logout }) {
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarShowLabel: false,
-        tabBarStyle: { 
-            position: 'absolute',
-            bottom: 0, left: 0, right: 0,
-            width: '100%',
-            height: Platform.OS === 'ios' ? 85 : 60, 
-            backgroundColor: theme.card, 
-            borderTopWidth: 1, 
-            borderTopColor: theme.border,
-            elevation: 0,
-            flexDirection: 'row',
-            justifyContent: 'space-between', 
-            paddingHorizontal: 25, 
-            alignItems: 'center',
-            paddingBottom: Platform.OS === 'ios' ? 20 : 0
+        tabBarStyle: {
+          position: 'absolute',
+          bottom: 0, left: 0, right: 0,
+          width: '100%',
+          height: Platform.OS === 'ios' ? 85 : 60,
+          backgroundColor: theme.card,
+          borderTopWidth: 1,
+          borderTopColor: theme.border,
+          elevation: 0,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingHorizontal: 25,
+          alignItems: 'center',
+          paddingBottom: Platform.OS === 'ios' ? 20 : 0
         },
-        tabBarItemStyle: {
-            height: 60,
-            justifyContent: 'center',
-            alignItems: 'center',
-            flex: 0 
-        },
+        tabBarItemStyle: { height: 60, justifyContent: 'center', alignItems: 'center', flex: 0 },
         tabBarIcon: ({ focused, size }) => {
           let iconName;
           if (route.name === 'Feed') iconName = focused ? 'home' : 'home-outline';
@@ -89,7 +81,6 @@ function HomeTabs({ user, logout }) {
       <Tab.Screen name="Post">{(props) => <CreatePostScreen {...props} user={user} onPostSuccess={() => props.navigation.navigate('Feed')} onCancel={() => props.navigation.navigate('Feed')} />}</Tab.Screen>
       <Tab.Screen name="Reels" component={ReelsScreen} />
       <Tab.Screen name="Profile">{(props) => <ProfileScreen {...props} user={user} onLogout={logout} />}</Tab.Screen>
-      
       <Tab.Screen name="Activity" options={{ tabBarButton: () => null }}>{(props) => <ActivityScreen {...props} user={user} />}</Tab.Screen>
       <Tab.Screen name="Groups" options={{ tabBarButton: () => null }}>{(props) => <GroupsScreen {...props} user={user} />}</Tab.Screen>
       <Tab.Screen name="Market" options={{ tabBarButton: () => null }}>{(props) => <MarketScreen {...props} user={user} />}</Tab.Screen>
@@ -99,10 +90,7 @@ function HomeTabs({ user, logout }) {
 
 export default function AppNavigator({ user, setUser, logout }) {
   const [isDarkMode, setIsDarkMode] = useState(true);
-  
-  // Use local variables
   const theme = isDarkMode ? DarkColors : LightColors;
-  
   const toggleTheme = () => setIsDarkMode(!isDarkMode);
   const themeContextValue = useMemo(() => ({ isDarkMode, toggleTheme, theme }), [isDarkMode, theme]);
 
@@ -111,7 +99,8 @@ export default function AppNavigator({ user, setUser, logout }) {
       <NavigationContainer theme={isDarkMode ? DarkTheme : DefaultTheme}>
         <Stack.Navigator screenOptions={{ headerShown: false, contentStyle: { backgroundColor: theme.bg } }}>
           {!user ? (
-            <Stack.Screen name="Login">{(props) => <LoginScreen {...props} onLogin={setUser} />}</Stack.Screen>
+            // FIX: We changed 'onLogin' to 'setUser' to match the Login Screen!
+            <Stack.Screen name="Login">{(props) => <LoginScreen {...props} setUser={setUser} />}</Stack.Screen>
           ) : (
             <>
               <Stack.Screen name="Main">{(props) => <HomeTabs {...props} user={user} logout={logout} />}</Stack.Screen>
