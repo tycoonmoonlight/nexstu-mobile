@@ -1,4 +1,4 @@
-name: Fixed Android Build
+name: Unlimited Android Build
 on:
   push:
     branches:
@@ -17,20 +17,25 @@ jobs:
         with:
           node-version: 18.x
 
+      - name: ☕ Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
       - name: 📦 Install EAS CLI
         run: npm install -g eas-cli
 
       - name: 📦 Install Dependencies
-        run: |
-          npm install
-          # Force re-install firebase using Expo to fix missing internal links
-          npx expo install firebase
-          npx expo install expo-font
+        run: npm install
 
-      - name: 🔧 Auto-Fix Dependencies
-        run: npx expo install --fix
-
-      - name: 🚀 Build APK
+      - name: 🚀 Build APK Locally (Bypass Limit)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build --platform android --profile preview --non-interactive --no-wait
+        run: eas build --platform android --profile preview --non-interactive --local --output=nexstu.apk
+
+      - name: 📤 Upload APK to GitHub
+        uses: actions/upload-artifact@v3
+        with:
+          name: nexstu-apk
+          path: nexstu.apk
