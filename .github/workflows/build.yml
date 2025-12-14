@@ -35,7 +35,7 @@ jobs:
         run: eas build --platform android --profile preview --non-interactive --local --output=nexstu.apk
 
       - name: 📤 Upload APK to GitHub
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4  # <--- CHANGED THIS TO v4
         with:
           name: nexstu-apk
           path: nexstu.apk
