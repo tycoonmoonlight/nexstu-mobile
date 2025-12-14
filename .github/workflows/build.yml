@@ -23,6 +23,8 @@ jobs:
       - name: 📦 Install Dependencies
         run: |
           npm install
+          # Force re-install firebase using Expo to fix missing internal links
+          npx expo install firebase
           npx expo install expo-font
 
       - name: 🔧 Auto-Fix Dependencies
