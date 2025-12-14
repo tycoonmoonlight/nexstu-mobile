@@ -1,54 +1,61 @@
-import * as SecureStore from 'expo-secure-store';
-import { Platform } from 'react-native';
+import { auth } from '../config/firebase';
+import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const KEY = 'nexstu_user_data';
-
-// Helper to decide which storage to use
-const isWeb = Platform.OS === 'web';
-
-// 1. Save User Data
-export async function saveUser(userData) {
+// 1. Log In (Connect to Firebase)
+export const loginUser = async (email, password) => {
   try {
-    const value = JSON.stringify(userData);
-    if (isWeb) {
-      // Use Browser Storage
-      localStorage.setItem(KEY, value);
-    } else {
-      // Use Phone Secure Storage
-      await SecureStore.setItemAsync(KEY, value);
-    }
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    
+    // Save minimal info to keep the app logged in when you restart
+    const userData = {
+      uid: user.uid,
+      email: user.email,
+      token: await user.getIdToken()
+    };
+    await saveUser(userData);
+    return userData;
   } catch (error) {
-    console.log("Error saving user:", error);
+    console.error("Firebase Login Error:", error);
+    throw error;
   }
-}
+};
 
-// 2. Get User Data
-export async function getUser() {
+// 2. Log Out (Tell Firebase to end session)
+export const logoutUser = async () => {
   try {
-    if (isWeb) {
-      // Get from Browser
-      const value = localStorage.getItem(KEY);
-      return value ? JSON.parse(value) : null;
-    } else {
-      // Get from Phone
-      const value = await SecureStore.getItemAsync(KEY);
-      return value ? JSON.parse(value) : null;
-    }
+    await signOut(auth);
+    await removeUser();
   } catch (error) {
-    console.log("Error getting user:", error);
+    console.error("Logout Error:", error);
+  }
+};
+
+// --- Helper Functions for Local Storage (Keeping you logged in) ---
+
+export const saveUser = async (user) => {
+  try {
+    await AsyncStorage.setItem('user', JSON.stringify(user));
+  } catch (error) {
+    console.log('Error saving user', error);
+  }
+};
+
+export const getUser = async () => {
+  try {
+    const user = await AsyncStorage.getItem('user');
+    return user ? JSON.parse(user) : null;
+  } catch (error) {
+    console.log('Error getting user', error);
     return null;
   }
-}
+};
 
-// 3. Delete User Data
-export async function removeUser() {
+export const removeUser = async () => {
   try {
-    if (isWeb) {
-      localStorage.removeItem(KEY);
-    } else {
-      await SecureStore.deleteItemAsync(KEY);
-    }
+    await AsyncStorage.removeItem('user');
   } catch (error) {
-    console.log("Error removing user:", error);
+    console.log('Error removing user', error);
   }
-}
+};

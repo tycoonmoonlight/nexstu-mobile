@@ -1,45 +1,44 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { loginUser } from '../utils/auth';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../config/firebase';
 
-export default function LoginScreen({ onLogin }) {
+export default function LoginScreen({ setUser }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !password) {
-      alert("Please fill in all fields");
+      Alert.alert("Error", "Please enter both email and password.");
       return;
     }
 
     setLoading(true);
-
     try {
-      // We use FETCH (Built-in) instead of Axios to avoid install errors
-      // 127.0.0.1:8080 connects to your PHP Server
-      const response = await fetch('http://127.0.0.1:8080/nexstu/backend/api/v1/auth/login.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (data.status === 'success') {
-        // Login Success!
-        alert("Login Successful! Welcome back.");
-        onLogin(data.data); // Save user data
-      } else {
-        // Login Failed (Wrong password, etc)
-        alert(data.message || "Login failed");
-      }
+      const userData = await loginUser(email, password);
+      setUser(userData); // This unlocks the app!
     } catch (error) {
-      alert("Network Error: " + error.message);
+      Alert.alert("Login Failed", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Temporary Sign Up helper
+  const handleSignUp = async () => {
+    if (!email || !password) {
+      Alert.alert("Error", "Enter an email and password to create an account.");
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      await createUserWithEmailAndPassword(auth, email, password);
+      Alert.alert("Success", "Account created! You can now log in.");
+    } catch (error) {
+      Alert.alert("Sign Up Error", error.message);
     } finally {
       setLoading(false);
     }
@@ -47,11 +46,13 @@ export default function LoginScreen({ onLogin }) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Nexstu Login</Text>
+      <Text style={styles.title}>NexStu</Text>
+      <Text style={styles.subtitle}>Student Login</Text>
       
       <TextInput
         style={styles.input}
-        placeholder="School Email"
+        placeholder="student@unn.edu.ng"
+        placeholderTextColor="#666"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -61,18 +62,25 @@ export default function LoginScreen({ onLogin }) {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#666"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
       />
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin} disabled={loading}>
-        {loading ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={styles.buttonText}>Log In</Text>
-        )}
-      </TouchableOpacity>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0056b3" style={{marginTop: 20}} />
+      ) : (
+        <>
+          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+            <Text style={styles.loginButtonText}>Log In</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.signupButton} onPress={handleSignUp}>
+            <Text style={styles.signupButtonText}>New? Create Account</Text>
+          </TouchableOpacity>
+        </>
+      )}
     </View>
   );
 }
@@ -80,38 +88,50 @@ export default function LoginScreen({ onLogin }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
+    backgroundColor: '#f5f5f5',
     justifyContent: 'center',
     padding: 20,
   },
   title: {
-    fontSize: 32,
+    fontSize: 40,
     fontWeight: 'bold',
-    marginBottom: 40,
     color: '#333',
+    textAlign: 'center',
+    marginBottom: 10,
+  },
+  subtitle: {
+    fontSize: 18,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 40,
   },
   input: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#f0f0f0',
-    borderRadius: 8,
-    paddingHorizontal: 15,
+    backgroundColor: '#fff',
     marginBottom: 15,
+    padding: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
     fontSize: 16,
   },
-  button: {
-    width: '100%',
-    height: 50,
-    backgroundColor: '#007AFF',
+  loginButton: {
+    backgroundColor: '#0056b3',
+    padding: 15,
     borderRadius: 8,
     alignItems: 'center',
-    justifyContent: 'center',
     marginTop: 10,
   },
-  buttonText: {
+  loginButtonText: {
     color: '#fff',
-    fontSize: 18,
     fontWeight: 'bold',
+    fontSize: 16,
+  },
+  signupButton: {
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  signupButtonText: {
+    color: '#0056b3',
+    fontSize: 14,
   },
 });
