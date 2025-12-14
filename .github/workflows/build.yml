@@ -29,13 +29,15 @@ jobs:
       - name: 📦 Install Dependencies
         run: npm install
 
-      - name: 🚀 Build APK Locally (Bypass Limit)
+      - name: 🚀 Build APK Locally (Low Memory Mode)
         env:
           EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-        run: eas build --platform android --profile preview --non-interactive --local --output=nexstu.apk
+          # Limit Java Memory to 3GB to prevent crashing the 7GB Runner
+          GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=512m"
+        run: eas build --platform android --profile preview --non-interactive --local --clear-cache --output=nexstu.apk
 
       - name: 📤 Upload APK to GitHub
-        uses: actions/upload-artifact@v4  # <--- CHANGED THIS TO v4
+        uses: actions/upload-artifact@v4
         with:
           name: nexstu-apk
           path: nexstu.apk
